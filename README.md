@@ -125,3 +125,36 @@ resource "aws_lambda_function" "my_lambda_function" {
 
 - Check if the above output you have printed appears in cloudwatch logs, if not assign IAM role correct permisions and execute the same set of instructions.
 - Explore the attribute available to context for this lambda function and discuss possible cases when context attributes can be used.
+
+<!-- BEGIN_TF_DOCS -->
+## Requirements
+
+No requirements.
+
+## Providers
+
+| Name | Version |
+|------|---------|
+| <a name="provider_archive"></a> [archive](#provider\_archive) | n/a |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | n/a |
+
+## Modules
+
+No modules.
+
+## Resources
+
+| Name | Type |
+|------|------|
+| [aws_iam_role.lambda_role](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
+| [aws_lambda_function.my_lambda_function](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lambda_function) | resource |
+| [archive_file.lambda_file](https://registry.terraform.io/providers/hashicorp/archive/latest/docs/data-sources/file) | data source |
+
+## Inputs
+
+No inputs.
+
+## Outputs
+
+No outputs.
+<!-- END_TF_DOCS -->
