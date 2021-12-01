@@ -30,6 +30,7 @@ EOF
 }
 ```
 - Create a new policy to allow permission on cloudwatch logs:
+- Add permission to read and write to S3. 
 
 ```json
 resource "aws_iam_policy" "my_policy" {
@@ -58,14 +59,13 @@ resource "aws_iam_policy" "my_policy" {
             ],
             "Effect" : "Allow",
             "Sid" : "S3ObjectActions",
-            "Resource" : ["arn:aws:s3:::talent-academy-439272626435-tfstate-ashley"]
+            "Resource" : ["arn:aws:s3:::<BUCKET-NAME>"]
             }
       ]
   }
 EOF
 }
 ```
-- Add permission to read and write to S3. You might need to create a new bucket first or use an existing.
 
 **Step 2**
 
