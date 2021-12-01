@@ -7,71 +7,20 @@
 
 - Create Role for lambda function with an assume Role
 
-```tf
-resource "aws_iam_role" "lambda_role" {
-      name = "lambda_role"
-      assume_role_policy = <<EOF
-{
-      "Version" : "2012-10-17",
-      "Statement" : [
-          {
-            "Action" : [
-                "sts:AssumeRole"
-            ],
-            "Principal" : {
-                "Service" : "lambda.amazonaws.com"
-            },
-            "Effect" : "Allow",
-            "Sid" : "LambdaRole"
-          }
-      ]
-}
-EOF
-}
-```
+
 - Create a new policy to allow permission on cloudwatch logs:
 - Add permission to read and write to S3. 
+https://awspolicygen.s3.amazonaws.com/policygen.html
 
-```json
-resource "aws_iam_policy" "my_policy" {
-  name = "my-role"
-   description = "My policy"
 
-  policy = <<-EOF
-  {
-        "Version" : "2012-10-17",
-        "Statement" : [
-          {
-            "Action" : [
-                "logs:CreateLogGroup",
-                "logs:CreateLogStream",
-                "logs:PutLogEvents"
-            ],
-            "Resource": "arn:aws:logs:*:*:*",
-            "Effect" : "Allow",
-            "Sid" : "cloudwatchLambda"
-          },
-          {
-            "Action" : [
-                "s3:GetObject",
-                "s3:List*",
-                "s3:PutObject"
-            ],
-            "Effect" : "Allow",
-            "Sid" : "S3ObjectActions",
-            "Resource" : ["arn:aws:s3:::<BUCKET-NAME>"]
-            }
-      ]
-  }
-EOF
-}
-```
 
 **Step 2**
 
 - Download the [sample json file](./sample_data.json) and upload it (using any method) into your S3 Bucket.
 
-
+'''
+aws s3 cp sampledata.json s3://<path>
+'''
 
 
 **Step 3**
@@ -106,20 +55,21 @@ Examples:
 ```tf
   data "archive_file" "lambda_file" {
     type = "zip"
-    source_file = "${path.cwd}/boto3.py"
-    output_path = "${path.cwd}/lambda.zip"
+    source_file = "${path.module}/pet_info.py"
+    output_path = "${path.module}/files/pet_info.zip"
 }
 
 resource "aws_lambda_function" "my_lambda_function" {
   filename = data.archive_file.lambda_file.output_path
-  function_name = "lambda_pets"
+  function_name = "pet_info"
   role = aws_iam_role.lambda_role.arn
-  handler = "boto3.lambda_handler"
-  runtime = "python3.9"
+  handler = "pet_info.pet_info"
+  source_code_hash = data.archive_file.lambda_file.output_base64sha256
+  runtime = "python3.8"
 }
 ```
 - Create Lambda resource in terraform
-    - Run time environment - Python 3.8
+- Run time environment - Python 3.8
 
 **Testing**
 
