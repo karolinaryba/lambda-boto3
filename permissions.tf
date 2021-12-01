@@ -46,7 +46,7 @@ resource "aws_iam_policy" "my_policy" {
             "Action": [
                 "s3:GetObject",
                 "s3:PutObject",
-                "s3:List*"   #separate element for list -what to look for in policy generator?
+                "s3:List*"   #separate element for list -what to look for in policy generator? s3:ListALLMyBuckets
             ],
             "Effect": "Allow",
             "Resource": "arn:aws:s3:::$talent-academy-439272626435-tfstates",   
