@@ -1,12 +1,82 @@
+# #permissions and policies
+
+# #Create Role for lambda function with an assume Role
+# resource "aws_iam_role" "lambda_role" {
+#     name = "lambda_assume_role"
+#     description = "assume role policy"
+#   assume_role_policy = jsonencode({
+#       "Version" : "2012-10-17",
+#       "Statement" : [
+#           {
+#             "Action" : [
+#                 "sts:AssumeRole"
+#             ],
+#             "Principal" : {
+#                 "Service" : "lambda.amazonaws.com"
+#             },
+#             "Effect" : "Allow",
+#             "Sid" : "LambdaRole"
+#           }
+#       ]})
+# }
+
+# #Create a new policy to allow permission on cloudwatch logs:
+
+# resource "aws_iam_policy" "my_policy" {
+#     name = "cloudwatch_policy_permission"
+#     description = "policy to allow permission on cloudwatch logs"
+
+#   policy = jsonencode({
+#         "Version" : "2012-10-17",
+#         "Statement" : [
+#           {
+#             "Action" : [
+#                 "logs:CreateLogGroup",
+#                 "logs:CreateLogStream",
+#                 "logs:PutLogEvents"
+#             ],
+#             "Resource": "arn:aws:s3:::talent-academy-439272626435-tfstates-lambda/*",
+#             "Effect" : "Allow",
+#             "Sid" : "cloudwatchLambda"
+#           },
+#           {
+#             "Action" : [
+#                 "s3:GetObject",
+#                 "s3:PutObject"
+#             ],
+#             "Effect" : "Allow",
+#             "Sid" : "S3ObjectActions",
+#             "Resource" : ["arn:aws:s3:::talent-academy-439272626435-tfstates-lambda/*"]
+#             },
+#             {
+#             "Action" : [
+#                 "s3:List*"
+#             ],
+#             "Effect" : "Allow",
+#             "Sid" : "S3ObjectActions",
+#             "Resource" : ["arn:aws:s3:::talent-academy-439272626435-tfstates-lambda/*"]
+#             }
+#       ]
+#   })
+# }
+
+
+
+
+# resource "aws_iam_role_policy_attachment" "test-attach" {
+#   role       = aws_iam_role.lambda_role.name
+#   policy_arn = aws_iam_policy.my_policy.arn
+# }
+
 #permissions and policies
 
 #Create Role for lambda function with an assume Role
 
 
 resource "aws_iam_role" "lambda_role" {
-    name = "lambda_assume_role"
+    name = "lambda_role"
     description = "assume role policy"
-  assume_role_policy = {
+  assume_role_policy = jsonencode({
       "Version" : "2012-10-17",
       "Statement" : [
           {
@@ -20,15 +90,16 @@ resource "aws_iam_role" "lambda_role" {
             "Sid" : "LambdaRole"
           }
       ]
+})
 }
 
 #Create a new policy to allow permission on cloudwatch logs:
 
 resource "aws_iam_policy" "my_policy" {
-    name = "cloudwatch_policy_permission"
+    name = "cloudwatch_policy"
     description = "policy to allow permission on cloudwatch logs"
 
-  policy = {
+  policy = jsonencode({
         "Version" : "2012-10-17",
         "Statement" : [
           {
@@ -43,20 +114,27 @@ resource "aws_iam_policy" "my_policy" {
           },
 
          {
-            "Action": [
+            "Action" : [
                 "s3:GetObject",
-                "s3:PutObject",
-                "s3:List*"   #separate element for list -what to look for in policy generator? s3:ListALLMyBuckets
+                "s3:PutObject"
             ],
-            "Effect": "Allow",
-            "Resource": "arn:aws:s3:::$talent-academy-439272626435-tfstates",   
-            "Principal": {
-            "AWS": [
-            "439272626435"
-            ]
-            } # is Principal required?
-        }
-    ]}
+            "Effect" : "Allow",
+            "Sid" : "S3ObjectActions",
+            "Resource" : ["arn:aws:s3:::talent-academy-439272626435-tfstates-practice"]
+            },
+            {
+            "Action" : [
+                "s3:List*"
+            ],
+            "Effect" : "Allow",
+            "Sid" : "S3listActions",
+            "Resource" : ["arn:aws:s3:::*"]
+            }
+    ]})
 
 }
+
+resource "aws_iam_role_policy_attachment" "test-attach" {
+  role       = aws_iam_role.lambda_role.name
+  policy_arn = aws_iam_policy.my_policy.arn
 }
