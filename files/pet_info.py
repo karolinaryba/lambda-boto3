@@ -1,31 +1,37 @@
+       
 import boto3
 import json
 
 def pet_info(event, context):
-    #connect to S3
-    s3_client = boto3.client('s3')
+    # Connected to the S3 service through API calls
+    s3 = boto3.client('s3')
 
-    bucket_name = event['S3Bucket']
-    key = event['S3Prefix']
+    # Collect the bucket name from Event
+    target_bucket_name = event["S3Bucket"]
+    target_key = event['S3Prefix']
     petName = event['PetName']
+    # RETRIEVE all existing buckets in my account
+    my_buckets_raw = s3.list_buckets()
 
-    #list all buckets
-    list_buckets_raw = s3_client.list_buckets()
-    for bucket in list_buckets_raw['Buckets']:
-        print("Name of bucket:" + bucket_name)
-        if bucket['Name'] == bucket_name:
-            print('Bucket exists')
-            myBucket = s3_client.Bucket(bucket_name)
-            obj = myBucket.Object(key)
-            body = format(obj.get()['Body'].read())  #print('Object body: {}'.format(obj.get()['Body'].read()))
-            jsonSample = json.loads(body)
+    # List the name of each bucket
+    for bucket in my_buckets_raw["Buckets"]:
+        print("Name of bucket : " + bucket["Name"])
+
+    # Check if the target bucket exists
+    for bucket in my_buckets_raw["Buckets"]:
+        if bucket["Name"] == target_bucket_name:
+            print("The bucket " + target_bucket_name + " exists!")
+            obj = s3.get_object(Bucket=target_bucket_name, Key=target_key)
+            jsonSample = json.loads(obj['Body'].read())
+            
             
             for pet in jsonSample['pets']:
                 if petName == pet['name']:
-                    return {'body' : json.dumps(pet['favFoods'])}
-        else:
-            print("Bucket doesn't exist.")
-
-    
-                    
-
+                    return {
+                        'body' : json.dumps(pet['favFoods'])
+                    }
+            else:
+                return {
+                    'body' : "Bucket doesn't exist"
+                }
+            
